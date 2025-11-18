@@ -15,6 +15,7 @@ from ..misc import dist_utils
 from ._solver import BaseSolver
 from .clas_engine import evaluate, train_one_epoch
 
+import wandb
 
 class ClasSolver(BaseSolver):
     def fit(
@@ -30,6 +31,19 @@ class ClasSolver(BaseSolver):
         output_dir = Path(args.output_dir)
         output_dir.mkdir(exist_ok=True)
 
+        run = wandb.init(
+            # Set the wandb entity where your project will be logged (generally your team name).
+            entity="prom-perception",
+            # Set the wandb project where this run will be logged.
+            project="prom-perception",
+            # Track hyperparameters and run metadata.
+            config={
+                "model": "D-FINE",
+                "dataset": "old",
+                "epochs": 10,
+            },
+        )
+
         start_time = time.time()
         start_epoch = self.last_epoch + 1
         for epoch in range(start_epoch, args.epochs):
@@ -37,6 +51,7 @@ class ClasSolver(BaseSolver):
                 self.train_dataloader.sampler.set_epoch(epoch)
 
             train_stats = train_one_epoch(
+                run,
                 self.model,
                 self.criterion,
                 self.train_dataloader,
@@ -45,6 +60,7 @@ class ClasSolver(BaseSolver):
                 epoch=epoch,
                 device=self.device,
             )
+
             self.lr_scheduler.step()
             self.last_epoch += 1
 
@@ -69,6 +85,8 @@ class ClasSolver(BaseSolver):
             if output_dir and dist_utils.is_main_process():
                 with (output_dir / "log.txt").open("a") as f:
                     f.write(json.dumps(log_stats) + "\n")
+
+        run.finish()
 
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))

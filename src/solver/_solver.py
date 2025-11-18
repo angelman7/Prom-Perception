@@ -150,7 +150,7 @@ class BaseSolver(object):
             atexit.register(self.writer.close)
             if dist_utils.is_main_process():
                 self.writer.add_text("config", "{:s}".format(cfg.__repr__()), 0)
-        self.use_wandb = self.cfg.use_wandb
+        self.use_wandb = True
         if self.use_wandb:
             try:
                 import wandb

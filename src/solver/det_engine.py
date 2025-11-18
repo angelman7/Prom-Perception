@@ -22,6 +22,8 @@ from ..misc import MetricLogger, SmoothedValue, dist_utils, save_samples
 from ..optim import ModelEMA, Warmup
 from .validator import Validator, scale_boxes
 
+import wandb
+
 
 def train_one_epoch(
     model: torch.nn.Module,
@@ -34,9 +36,6 @@ def train_one_epoch(
     max_norm: float = 0,
     **kwargs,
 ):
-    if use_wandb:
-        import wandb
-
     model.train()
     criterion.train()
     metric_logger = MetricLogger(delimiter="  ")
@@ -255,5 +254,8 @@ def evaluate(
             stats["coco_eval_bbox"] = coco_evaluator.coco_eval["bbox"].stats.tolist()
         if "segm" in iou_types:
             stats["coco_eval_masks"] = coco_evaluator.coco_eval["segm"].stats.tolist()
+
+        if use_wandb:
+            wandb.log(stats)
 
     return stats, coco_evaluator

@@ -27,11 +27,17 @@ class DetSolver(BaseSolver):
             import wandb
 
             wandb.init(
-                project=args.yaml_cfg["project_name"],
-                name=args.yaml_cfg["exp_name"],
-                config=args.yaml_cfg,
+                # Set the wandb entity where your project will be logged (generally your team name).
+                entity="prom-perception",
+                # Set the wandb project where this run will be logged.
+                project="prom-perception",
+                # Track hyperparameters and run metadata.
+                config={
+                    "model": "D-FINE",
+                    "dataset": "old",
+                    "epochs": self.cfg.epochs,
+                },
             )
-            wandb.watch(self.model)
 
         n_parameters, model_stats = stats(self.cfg)
         print(model_stats)
@@ -200,6 +206,9 @@ class DetSolver(BaseSolver):
                                 coco_evaluator.coco_eval["bbox"].eval,
                                 self.output_dir / "eval" / name,
                             )
+
+        if self.use_wandb:
+            wandb.finish()
 
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))

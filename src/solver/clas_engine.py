@@ -5,12 +5,13 @@ Copyright(c) 2023 lyuwenyu. All Rights Reserved.
 
 import torch
 import torch.nn as nn
+import wandb
 
 from ..misc import MetricLogger, SmoothedValue, reduce_dict
 
 
 def train_one_epoch(
-    model: nn.Module, criterion: nn.Module, dataloader, optimizer, ema, epoch, device
+    wandb_run, model: nn.Module, criterion: nn.Module, dataloader, optimizer, ema, epoch, device
 ):
     """ """
     model.train()
@@ -42,6 +43,8 @@ def train_one_epoch(
     print("Averaged stats:", metric_logger)
 
     stats = {k: meter.global_avg for k, meter in metric_logger.meters.items()}
+    wandb_run.log(stats)
+
     return stats
 
 

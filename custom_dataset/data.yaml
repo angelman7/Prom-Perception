@@ -1,0 +1,12 @@
+path: /content/drive/MyDrive/yoloPoseTraining/DV1-LOR-MERGED
+train: ./train/images
+val: ./valid/images
+
+kpt_shape: [11, 3]
+
+nc: 4
+names:
+    0: blue
+    1: yellow
+    2: orange
+    3: large
