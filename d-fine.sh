@@ -6,7 +6,7 @@ mode_set=false
 epochs=10
 t_size=16
 v_size=32
-config_file=/home/angelman7/PycharmProjects/D-FINE/configs/dfine/custom/dfine_hgnetv2_n_custom.yml
+config_file=configs/dfine/custom/dfine_hgnetv2_n_custom.yml
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -76,7 +76,7 @@ sed -i "70s/.*/epochs: $epochs/" $config_file
 sed -i "72s/.*/  total_batch_size: $t_size/" $config_file
 sed -i "83s/.*/  total_batch_size: $v_size/" $config_file
 
-source /home/angelman7/miniconda3/etc/profile.d/conda.sh
+source /home/ubuntu/miniconda3/etc/profile.d/conda.sh
 conda activate dfine
 
 wandb login
